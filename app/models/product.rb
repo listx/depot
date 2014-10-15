@@ -1,6 +1,10 @@
 class Product < ActiveRecord::Base
   validates :title, :description, :image_url, presence: true
   validates :title, uniqueness: true
+  # FIXME: After adding a new validation option, such as :length here, is there
+  # a way to retroactively flag/check all items in the Model that do not pass
+  # this validation?
+  validates :title, length: { minimum: 10 }
   # `allow_blank: true` avoids getting multiple error messages when the field is
   # blank (i.e., when the field is blank, we just get 'this field cannot be
   # empty' and ignore the 'must be a gif/jpg/png' error message); this is what
