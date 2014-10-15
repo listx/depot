@@ -4,7 +4,7 @@ class Product < ActiveRecord::Base
   # FIXME: After adding a new validation option, such as :length here, is there
   # a way to retroactively flag/check all items in the Model that do not pass
   # this validation?
-  validates :title, length: { minimum: 10 }
+  validates :title, length: { minimum: 10, message: "must be >= 10 chars" }
   # `allow_blank: true` avoids getting multiple error messages when the field is
   # blank (i.e., when the field is blank, we just get 'this field cannot be
   # empty' and ignore the 'must be a gif/jpg/png' error message); this is what
