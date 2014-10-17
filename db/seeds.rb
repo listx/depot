@@ -17,7 +17,7 @@ Product.create!(title: 'Programming Ruby 1.9 & 2.0',
     image_url: 'ruby.jpg',
     price: 49.95)
 
-Product.create!(title: 'Haskell',
+Product.create!(title: 'Haskell is the best',
   description:
     %{<p>
       <em>Haskell</em> is cooler than the 10 most uncool languages! It is used
@@ -25,3 +25,11 @@ Product.create!(title: 'Haskell',
     </p>},
   image_url: 'rtp.jpg',
   price: 34.95)
+
+Product.create!(title: 'C is for smart people',
+  description:
+    %{<p>
+      <em>C</em> is a really nice programming language!
+    </p>},
+  image_url: 'rtp.jpg',
+  price: 0.0111)
