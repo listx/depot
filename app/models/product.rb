@@ -1,4 +1,8 @@
+require_relative 'validators/product_validator.rb'
+
 class Product < ActiveRecord::Base
+  include ActiveModel::Validations
+
   has_many :line_items
   has_many :orders, through: :line_items
 
@@ -19,8 +23,8 @@ class Product < ActiveRecord::Base
     with: %r{\.(gif|jpg|png)\Z}i,
     message: 'must be a URL for GIF, JPG, or PNG image.'
   }
-  # FIXME: testing against 0.01 (1 cent) allows bogus value `3.001'
   validates :price, numericality: {greater_than_or_equal_to: 0.01}
+  validates_with ProductValidator
 
   def self.latest
     Product.order(:updated_at).last

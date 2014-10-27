@@ -15,7 +15,6 @@ class ProductTest < ActiveSupport::TestCase
     assert product.errors[:image_url].any?
   end
 
-  # FIXME: Again, price of 3.001 or 0.0001 is valid.
   test "product price must be positive" do
     product = Product.new(title:       "My Book Title",
                           description: "yyy",
@@ -30,9 +29,17 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal ["must be greater than or equal to 0.01"],
       product.errors[:price]
 
+    # This price fails in 2 ways: first, it is less than 1 cent, but also, it
+    # has granularity beyond 1 cent.
     product.price = 0.001
     assert product.invalid?
-    assert_equal ["must be greater than or equal to 0.01"],
+    assert_equal ["must be greater than or equal to 0.01",
+        "must be in increments of 1 cent"],
+      product.errors[:price]
+
+    product.price = 1.001
+    assert product.invalid?
+    assert_equal ["must be in increments of 1 cent"],
       product.errors[:price]
 
     product.price = 1
