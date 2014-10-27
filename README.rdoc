@@ -115,6 +115,45 @@ prevents our exploited/rogue app from doing damage to other data stored in PG in
 our server --- which is important if we're running, for example, multiple
 webapps with multiple databases all in the same PG instance).
 
+If the 'rake db:setup' command fails b/c of peer authentication failure like this:
+
+    PG::ConnectionBad: FATAL:  Peer authentication failed for user "depot_role"
+
+, this means that PG is trying to authenticate the user "depot_role" based on
+the operating system's logged-in username. If your system's username is
+different than "depot_role" that you created in PG, you will get this failure if
+you enable peer authentication in your pg_hba.conf file. You can find the
+location of the pg_hba.conf file by doing "SHOW hba_file;" in the PG console.
+
+So, to fix this issue, you need to edit the "pg_ident.conf" file (you can find
+the location with "SHOW ident_file;" in PG). Put the following in "pg_ident.conf":
+
+    rails   your-os-username    depot_role
+
+. Then, you need to turn on this mapping for peer authentication (which is
+enabled by default for local connections in the default postgresql install on
+Centos) by editing "pg_hba.conf" from
+
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     peer
+
+to
+
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     peer map=rails
+
+. If you have "trust" as the method instead of "peer", then you don't need to do
+any of this, as PG will assume anyone who can connect to the server is
+authorized to access the database with *whatever* name they specify.
+
+Personally, I like this method as it avoids putting in your chosen PG role's
+password as cleartext in your database.yml file (which is required if you use
+the "md5" method instead of "peer").
+
 == Securing your server
 
 I followed this page https://www.linode.com/docs/security/securing-your-server and used iptables to block spurious traffic.
