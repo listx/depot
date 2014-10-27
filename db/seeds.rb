@@ -32,4 +32,4 @@ Product.create!(title: 'C is for smart people',
       <em>C</em> is a really nice programming language!
     </p>},
   image_url: 'rtp.jpg',
-  price: 0.0111)
+  price: 0.01)
