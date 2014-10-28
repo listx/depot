@@ -54,11 +54,35 @@ Notice that we use "RackEnv production" here. If you just want to test that
 everything works in your deployment server as your *development* environment on
 your development machine, change this to "RackEnv development".
 
-* Lastly, as Apache by default points to /var/www/html, I needed to symlink my
-  Rails app's root folder, like this:
+* As Apache by default points to /var/www/html, I needed to symlink my Rails
+  app's root folder, like this:
 
     $ cd /var/www/html
     $ ln -s /home/l/some/path/to/my/app/named/depot
+
+* You have to enable the $SECRET_KEY_BASE environment variable, as Rails 4
+  production mode requires this by default (see "depot/config/secrets.yml". The
+  UNIX way to do this, without touching your application, is to figure out which
+  shell you are using.
+
+    $ echo $SHELL
+
+For my remote server, I log in as a normal user, and for that user I log in with
+"/bin/zsh". Because zsh sources ~/.zprofile, I needed to export the
+$SECRET_KEY_BASE variable in ~/.zprofile. If you do not use zsh, google and find
+out which file is sourced by your shell (I believe bash sources
+~/.bash_profile. So, the trick is to first generate a secret key, and enable it
+in a shell profile file, as follows:
+
+    $ cd path/to/depot
+    $ RAILS_ENV=production rake secret
+
+This will generate a long secret hex number (our secret key). To enable it, put
+this in your ~/.zprofile:
+
+    $ export SECRET_KEY_BASE=your_long_secret_hex_number
+
+and then restart apache.
 
 == Post-deployment
 
@@ -157,6 +181,15 @@ authorized to access the database with *whatever* name they specify.
 Personally, I like this method as it avoids putting in your chosen PG role's
 password as cleartext in your database.yml file (which is required if you use
 the "md5" method instead of "peer").
+
+* Missing assets
+
+To enable CSS/JS in Rails 4 production mode, you have to enable
+"config.assets.compile = true" (off by default) in
+"config/environments/production.rb".
+
+If your images are not working, make sure to delete the depot/tmp folder
+entirely and try again.
 
 == Securing your server
 
