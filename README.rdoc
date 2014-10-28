@@ -88,7 +88,9 @@ and then restart apache.
 
 To add books, you have to first create a new administrative user. You can do
 this with the rails console: "User.create(name: 'yourname', password:
-'yourpassword', password_confirmation: 'yourpassword')"
+'yourpassword', password_confirmation: 'yourpassword')". Make sure to run "rails
+console" with "RAILS_ENV=production", as you will be using the production
+environment.
 
 To use Postgresql (PG) for the database, I needed to do:
 
@@ -157,6 +159,7 @@ So, to fix this issue, you need to edit the "pg_ident.conf" file (you can find
 the location with "SHOW ident_file;" in PG). Put the following in "pg_ident.conf":
 
     rails   your-os-username    depot_role
+    rails   your-os-username    postgres
 
 . Then, you need to turn on this mapping for peer authentication (which is
 enabled by default for local connections in the default postgresql install on
@@ -181,6 +184,16 @@ authorized to access the database with *whatever* name they specify.
 Personally, I like this method as it avoids putting in your chosen PG role's
 password as cleartext in your database.yml file (which is required if you use
 the "md5" method instead of "peer").
+
+To test that you can indeed use peer authentication, do
+
+    $ psql --username postgres
+
+and see if you can connect to the PG server. This is slightly different than
+what most people on the web recommend, which is "sudo -u postgres psql". After
+loggin in as the "postgres" PG username, check to see that the "depot_role" role
+exists with the "\du" command. If it doesn't create it with "create role
+depot_role with createdb login;".
 
 * Missing assets
 
