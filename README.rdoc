@@ -90,7 +90,10 @@ To add books, you have to first create a new administrative user. You can do
 this with the rails console: "User.create(name: 'yourname', password:
 'yourpassword', password_confirmation: 'yourpassword')". Make sure to run "rails
 console" with "RAILS_ENV=production", as you will be using the production
-environment.
+environment, like this:
+
+    $ RAILS_ENV=production rails console
+    <ruby_version> :001> User.create(name: 'yourname', password: 'yourpassword', password_confirmation: 'yourpassword')
 
 To use Postgresql (PG) for the database, I needed to do:
 
